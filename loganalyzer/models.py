@@ -3,7 +3,6 @@ from collections import Counter
 
 @dataclass
 class LogEntry:
-    """Part A.1: Dataclass representing a single valid log entry."""
     timestamp: str
     level: str
     message: str
@@ -14,7 +13,6 @@ class LogEntry:
 
 
 class LogAnalyzer:
-    """Part A.2: Additional class for data analysis."""
     def __init__(self, entries):
         self.entries = entries
 
@@ -37,14 +35,12 @@ class LogAnalyzer:
 
 
 def filter_by_level_generator(entries, target_level):
-    """Part B.3: Generator that accepts an iterable and yields matching levels."""
     for entry in entries:
         if entry.level == target_level:
             yield entry
 
 
 class BatchIterator:
-    """Part B.4: Custom iterator returning log entries in configurable batches."""
     def __init__(self, entries, batch_size):
         self.entries = list(entries) 
         self.batch_size = batch_size

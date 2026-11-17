@@ -6,7 +6,6 @@ class LogReader:
         self.invalid_count = 0
 
     def generate_entries(self, filename):
-        """Part B.1 & B.2: Generator yielding valid entries and tracking malformed lines."""
         try:
             with open(filename, "r") as file:
                 for line in file:

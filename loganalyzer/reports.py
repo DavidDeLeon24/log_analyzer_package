@@ -4,7 +4,6 @@ class ReportGenerator:
         self.invalid_count = invalid_count
 
     def export_text_report(self, filename="summary_report.txt"):
-        """Part D.1: Export a plain-text summary report."""
         counts = self.analyzer.count_by_level()
         top_errors = self.analyzer.get_top_errors()
         daily_counts = self.analyzer.get_daily_counts()
