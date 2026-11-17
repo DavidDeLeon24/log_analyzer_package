@@ -1,47 +1,63 @@
 from dataclasses import dataclass
-
+from collections import Counter
 
 @dataclass
 class LogEntry:
-    """Represents a single valid line of the log file."""
+    """Part A.1: Dataclass representing a single valid log entry."""
     timestamp: str
     level: str
     message: str
-
-    def is_error(self):
-        return self.level == "ERROR"
-
-    def is_warning(self):
-        return self.level == "WARNING"
+    date_str: str
 
     def to_string(self):
         return f"{self.timestamp} {self.level} {self.message}"
 
 
 class LogAnalyzer:
-    """Analyzes a list of LogEntry objects."""
-
-    def __init__(self, entries, invalid_count):
+    """Part A.2: Additional class for data analysis."""
+    def __init__(self, entries):
         self.entries = entries
-        self.invalid_count = invalid_count
 
-    def count_by_level(self, level):
-        # Declarative: list comprehension
-        return len([e for e in self.entries if e.level == level])
+    def count_by_level(self):
+        counts = Counter(entry.level for entry in self.entries)
+        return {level: counts.get(level, 0) for level in ["DEBUG", "INFO", "WARNING", "ERROR"]}
 
-    def error_messages(self):
-        # Declarative: list comprehension
-        return [e.message for e in self.entries if e.is_error()]
+    def get_top_errors(self, limit=5):
+        error_msgs = [e.message for e in self.entries if e.level == "ERROR"]
+        counts = Counter(error_msgs)
+        sorted_errors = sorted(counts.items(), key=lambda x: (-x[1], x[0]))
+        return sorted_errors[:limit]
 
-    def filter_by_level(self, level):
-        # Declarative: list comprehension
-        return [e for e in self.entries if e.level == level]
+    def get_daily_counts(self):
+        counts = Counter(entry.date_str for entry in self.entries)
+        return sorted(counts.items())
 
-    def total_valid(self):
-        return len(self.entries)
+    def filter_by_date(self, start_date, end_date):
+        return [e for e in self.entries if start_date <= e.date_str <= end_date]
 
-    def suspicious_logins(self):
-        return [
-            e for e in self.entries
-            if e.level == "WARNING" and "login" in e.message.lower()
-        ]
+
+def filter_by_level_generator(entries, target_level):
+    """Part B.3: Generator that accepts an iterable and yields matching levels."""
+    for entry in entries:
+        if entry.level == target_level:
+            yield entry
+
+
+class BatchIterator:
+    """Part B.4: Custom iterator returning log entries in configurable batches."""
+    def __init__(self, entries, batch_size):
+        self.entries = list(entries) 
+        self.batch_size = batch_size
+        self.current_index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.current_index >= len(self.entries):
+            raise StopIteration
+        
+        end = self.current_index + self.batch_size
+        batch = self.entries[self.current_index:end]
+        self.current_index = end
+        return batch

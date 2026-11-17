@@ -1,32 +1,29 @@
 class ReportGenerator:
-    """Generates formatted reports from a LogAnalyzer."""
-
-    def __init__(self, analyzer):
+    def __init__(self, analyzer, invalid_count):
         self.analyzer = analyzer
+        self.invalid_count = invalid_count
 
-    def print_summary(self):
-        print("===== SUMMARY =====")
-        print(f"Total valid entries: {self.analyzer.total_valid()}")
-        print(f"Invalid lines skipped: {self.analyzer.invalid_count}")
-        print(f"INFO:    {self.analyzer.count_by_level('INFO')}")
-        print(f"DEBUG:   {self.analyzer.count_by_level('DEBUG')}")
-        print(f"WARNING: {self.analyzer.count_by_level('WARNING')}")
-        print(f"ERROR:   {self.analyzer.count_by_level('ERROR')}")
+    def export_text_report(self, filename="summary_report.txt"):
+        """Part D.1: Export a plain-text summary report."""
+        counts = self.analyzer.count_by_level()
+        top_errors = self.analyzer.get_top_errors()
+        daily_counts = self.analyzer.get_daily_counts()
 
-    def print_first_errors(self, n=5):
-        print(f"First {n} ERROR entries:")
-        count = 0
-        for entry in self.analyzer.entries:
-            if entry.is_error():
-                print(entry.to_string())
-                count += 1
-                if count == n:
-                    break
-        if count == 0:
-            print("  (no ERROR entries found)")
-
-    def print_suspicious_logins(self):
-        suspicious = self.analyzer.suspicious_logins()
-        print(f"\nSuspicious login warnings: {len(suspicious)}")
-        for entry in suspicious[:5]:
-            print(f"  {entry.to_string()}")
+        with open(filename, "w") as file:
+            file.write("=== SECURITY LOG ANALYZER REPORT ===\n\n")
+            file.write(f"Total Valid Entries: {len(self.analyzer.entries)}\n")
+            file.write(f"Total Malformed Lines: {self.invalid_count}\n\n")
+            
+            file.write("--- Severity Counts ---\n")
+            for level, count in counts.items():
+                file.write(f"{level}: {count}\n")
+            
+            file.write("\n--- Top 5 ERROR Messages ---\n")
+            for msg, count in top_errors:
+                file.write(f"{count}: {msg}\n")
+                
+            file.write("\n--- Valid Entries By Date ---\n")
+            for date, count in daily_counts:
+                file.write(f"{date}: {count}\n")
+                
+        print(f"\n[SUCCESS] Report successfully saved to '{filename}'")

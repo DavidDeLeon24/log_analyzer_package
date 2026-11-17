@@ -1,29 +1,40 @@
+import datetime
 from .models import LogEntry
 
+class LogReader:
+    def __init__(self):
+        self.invalid_count = 0
 
-def read_log_file(filename):
-    """
-    Reads a log file and returns:
-      - entries: list of LogEntry objects (valid lines only)
-      - invalid_count: number of skipped malformed lines
-    """
-    entries = []
-    invalid_count = 0
+    def generate_entries(self, filename):
+        """Part B.1 & B.2: Generator yielding valid entries and tracking malformed lines."""
+        try:
+            with open(filename, "r") as file:
+                for line in file:
+                    line = line.strip()
+                    if not line:
+                        continue
 
-    with open(filename, "r") as file:
-        for line in file:
-            line = line.strip()
-            if not line:
-                continue
+                    parts = line.split(" ", 3)
+                    
+                    if len(parts) != 4:
+                        self.invalid_count += 1
+                        continue
+                    
+                    date, time, level, message = parts
+                    
+                    valid_levels = ["DEBUG", "INFO", "WARNING", "ERROR"]
+                    if level not in valid_levels or not message.strip():
+                        self.invalid_count += 1
+                        continue
+                    
+                    try:
+                        datetime.datetime.strptime(f"{date} {time}", "%Y-%m-%d %H:%M:%S")
+                    except ValueError:
+                        self.invalid_count += 1
+                        continue
 
-            parts = line.split(" ", 3)
-
-            if len(parts) != 4:
-                invalid_count += 1
-                continue
-
-            date, time, level, message = parts
-            timestamp = f"{date} {time}"
-            entries.append(LogEntry(timestamp, level, message))
-
-    return entries, invalid_count
+                    timestamp = f"{date} {time}"
+                    yield LogEntry(timestamp, level, message, date)
+                    
+        except FileNotFoundError:
+            print(f"\n[ERROR] File '{filename}' not found. Please ensure it is in the same folder.")
