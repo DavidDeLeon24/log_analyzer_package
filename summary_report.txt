@@ -1,0 +1,23 @@
+=== SECURITY LOG ANALYZER REPORT ===
+
+Total Valid Entries: 1980
+Total Malformed Lines: 16
+
+--- Severity Counts ---
+DEBUG: 100
+INFO: 1105
+WARNING: 416
+ERROR: 359
+
+--- Top 5 ERROR Messages ---
+79: Service unavailable
+75: Database connection failed
+70: Request timeout
+68: Authentication failed
+67: Permission denied
+
+--- Valid Entries By Date ---
+2026-10-19: 476
+2026-10-20: 712
+2026-10-21: 713
+2026-10-22: 79
