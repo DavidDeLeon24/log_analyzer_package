@@ -112,7 +112,7 @@ def main():
             print(f"Size of final batch: {last_batch_size}")
 
         elif choice == "0":
-            print("Goodbye.")
+            print("Exiting the program")
             break
         else:
             print("[ERROR] Invalid choice. Please try again.")
